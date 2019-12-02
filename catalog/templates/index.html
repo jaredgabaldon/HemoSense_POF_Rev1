@@ -1,0 +1,15 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>HemoSense Home</h1>
+  <p>Welcome to HemoSense, a website dedidated to improving the well being of people with hemophilia</p>
+  <h2>Dynamic content</h2>
+  <p>The library has the following record counts:</p>
+  <ul>
+    <li><strong>Total Injuries:</strong> {{ num_injuries }}</li>
+    <li><strong>Total Breaks:</strong> {{ num_breaks }}</li>
+  </ul>
+
+<p>You have visited this page {{ num_visits }}{% if num_visits == 1 %} time{% else %} times{% endif %}.</p>
+
+{% endblock %}

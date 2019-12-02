@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Injury List By User</h1>
+
+    {% if injury_list %}
+    <ul>
+
+      {% for injury in injury_list %}
+      <li class="{% if bookinst.is_overdue %}text-danger{% endif %}">
+        <a href="{{ injury.get_absolute_url }}">{{ injury.title }}</a> ({{injury.person}})
+      </li>
+      {% endfor %}
+    </ul>
+
+    {% else %}
+      <p>No injuries to display.</p>
+    {% endif %}
+{% endblock %}
