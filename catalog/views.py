@@ -1,8 +1,8 @@
 from django.shortcuts import render
-
+from django.template import RequestContext
 # Create your views here.
 
-from .models import Book, Author, BookInstance, Genre, Injury, Person, Type_Of_Injury
+from .models import Book, Author, BookInstance, Genre, Injury, Person, Type_Of_Injury, InjuryForm
 
 
 def index(request):
@@ -116,10 +116,43 @@ import datetime
 from django.contrib.auth.decorators import permission_required
 
 # from .forms import RenewBookForm
-from catalog.forms import RenewBookForm, InjuryCreateForm
-
+from catalog.forms import RenewBookForm
 
 @permission_required('catalog.can_mark_returned')
+
+def create_new_injury(request):
+    
+    if request.method == "POST":
+        form = InjuryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('all-injuries'))
+    else:
+        form = InjuryForm(initial={'person': request.user})
+        
+    context = {
+        'form': 'form',
+        'book_instance': 'injury',
+    }
+
+    return render(request, 'catalog/book_renew_librarian.html', context)
+    
+def create_new_injury(request):
+    if request.method == "POST":
+        form = InjuryForm(request.POST)
+        if form.is_valid():
+            injury = form.save(commit=False)
+            injury.person = request.user
+            injury.save()
+            return HttpResponseRedirect(reverse('my-injuries'))
+        else:
+            variables = RequestContext(request, {'form': form})
+            return render(request, 'catalog/injury_form.html', variables)
+    else:
+        form = InjuryForm(initial={'person': request.user})
+    context = {'request': request, 'form': form}
+    return render(request, 'catalog/injury_form.html', context)
+
 def renew_book_librarian(request, pk):
     """View function for renewing a specific BookInstance by librarian."""
     book_instance = get_object_or_404(BookInstance, pk=pk)
@@ -154,7 +187,7 @@ def renew_book_librarian(request, pk):
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Author, Injury
+from .models import Author, Injury, InjuryForm
 
 
 class AuthorCreate(PermissionRequiredMixin, CreateView):
@@ -167,6 +200,13 @@ class InjuryCreate(LoginRequiredMixin, CreateView):
     model = Injury
     fields = ['title', 'person', 'summary', 'type_of_injury']
     permission_required = 'catalog.can_mark_returned'
+
+#class InjuryCreate(LoginRequiredMixin):
+#    form = InjuryForm(request.POST)
+#    if form.is_valid():
+#        injury = form.save(commit=False)
+#        injury.person = request.user
+#        animal.save()
 
 class AuthorUpdate(PermissionRequiredMixin, UpdateView):
     model = Author

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 
+from django.forms import ModelForm
 # Create your models here.
 class Genre(models.Model):
     """Model representing a book genre."""
@@ -60,6 +61,11 @@ class Injury(models.Model):
         return ', '.join(type_of_injury.name for genre in self.type_of_injury.all()[:3])
 
     display_injury_type.short_description = 'Type_Of_Injury'
+
+class InjuryForm(ModelForm):
+    class Meta:
+        model = Injury
+        fields = ['title', 'summary']
     
 class Book(models.Model):
     """Model representing a book (but not a specific copy of a book)."""

@@ -45,3 +45,8 @@ urlpatterns += [
     path('injury/create/', views.InjuryCreate.as_view(), name='injury_create'),
     path('injury/<int:pk>', views.InjuryDetailView.as_view(), name='injury-detail'),
 ]
+
+# Add URLConf for librarian to renew a book.
+urlpatterns += [
+    path('injury/renew/', views.create_new_injury, name='create-new-injury'),
+]

@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 import datetime  # for checking renewal date range.
 
 from django import forms
-
+from django.forms import ModelForm
 
 class RenewBookForm(forms.Form):
     """Form for a librarian to renew books."""
@@ -23,12 +23,7 @@ class RenewBookForm(forms.Form):
 
         # Remember to always return the cleaned data.
         return data
-        
-class InjuryCreateForm(forms.Form):
-    """Form for a librarian to renew books.fields = ['title', 'person', 'summary', 'type_of_injury']"""
-#    title = forms.CharFeild(
-#            help_text="Enter a title.")
-            
-    renewal_date = forms.DateField(
-            help_text="Enter a date between now and 4 weeks (default 3).")
 
+#class InjuryForm(forms.Form):
+#    title = forms.CharField(label='Title, max_length=100)
+#    summary = forms.CharField(label='Summary, max_length=500)
