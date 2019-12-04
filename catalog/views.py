@@ -9,7 +9,7 @@ def index(request):
     """View function for home page of site."""
     # Generate counts of some of the main objects
     num_injuries = Injury.objects.all().count()
-    num_breaks = Injury.objects.filter(type_of_injury=1).count()
+    num_breaks = Injury.objects.filter(injury_type=1).count()
     # Available copies of books
 #    num_people_available = BookInstance.objects.filter(status__exact='a').count()
 #    num_authors = Author.objects.count()  # The 'all()' is implied by default.

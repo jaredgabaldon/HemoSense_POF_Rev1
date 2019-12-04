@@ -33,6 +33,7 @@ class Language(models.Model):
         return self.name
         
 from django.contrib.auth.models import User  # Required to assign User as a borrower
+from catalog.choices import *
 
 class Injury(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
@@ -46,7 +47,8 @@ class Injury(models.Model):
 
     # ManyToManyField used because genre can contain many books. Books can cover many genres.
     # Genre class has already been defined so we can specify the object above.
-    type_of_injury = models.ManyToManyField(Type_Of_Injury, help_text='Select a type of injury for this incident')
+#        type_of_injury = models.ManyToManyField(Type_Of_Injury, help_text='Select a type of injury for this incident')
+    injury_type = models.IntegerField(choices=STATUS_CHOICES, default=1)
 
     def __str__(self):
         """String for representing the Model object."""
@@ -65,7 +67,7 @@ class Injury(models.Model):
 class InjuryForm(ModelForm):
     class Meta:
         model = Injury
-        fields = ['title', 'summary', 'type_of_injury']
+        fields = ['title', 'summary', 'injury_type']
     
 class Book(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
