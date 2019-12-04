@@ -42,7 +42,7 @@ urlpatterns += [
 
 # Add URLConf to create injurys
 urlpatterns += [
-    path('injury/create/', views.InjuryCreate.as_view(), name='injury_create'),
+    path('injury/create/', views.create_new_injury, name='injury_create'),
     path('injury/<int:pk>', views.InjuryDetailView.as_view(), name='injury-detail'),
 ]
 
