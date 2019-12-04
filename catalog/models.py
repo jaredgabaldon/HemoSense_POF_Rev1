@@ -65,7 +65,7 @@ class Injury(models.Model):
 class InjuryForm(ModelForm):
     class Meta:
         model = Injury
-        fields = ['title', 'summary']
+        fields = ['title', 'summary', 'type_of_injury']
     
 class Book(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
