@@ -2,8 +2,16 @@ from django.shortcuts import render
 from django.template import RequestContext
 # Create your views here.
 
-from .models import Book, Author, BookInstance, Genre, Injury, Person, Type_Of_Injury, InjuryForm
+from .models import Book, Author, BookInstance, Genre, Injury, Person, Type_Of_Injury, InjuryForm, BleedInfo, BleedForm
 
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+import datetime
+from django.contrib.auth.decorators import permission_required
+
+# from .forms import RenewBookForm
+from catalog.forms import RenewBookForm
 
 def index(request):
     """View function for home page of site."""
@@ -39,9 +47,18 @@ class InjuryDetailView(generic.DetailView):
     """Generic class-based detail view for a book."""
     model = Injury
 
+class BleedDetailView(generic.DetailView):
+    """Generic class-based detail view for a book."""
+    model = BleedInfo
+
 class BookListView(generic.ListView):
     """Generic class-based view for a list of books."""
     model = Book
+    paginate_by = 10
+
+class BleedsListView(generic.ListView):
+    """Generic class-based view for a list of books."""
+    model = BleedInfo
     paginate_by = 10
 
 
@@ -80,9 +97,21 @@ class InjuriesByUserListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         return Injury.objects.filter(person=self.request.user)
-    
+
+
+class BleedsByUserListView(LoginRequiredMixin, generic.ListView):
+    """Generic class-based view listing books on loan to current user."""
+    model = BleedInfo
+    template_name = 'catalog/bleed_list_by_user.html'
+
+    def get_queryset(self):
+        return BleedInfo.objects.filter(patient=self.request.user)
+
+
 # Added as part of challenge!
 from django.contrib.auth.mixins import PermissionRequiredMixin
+
+
 
 
 class LoanedBooksAllListView(PermissionRequiredMixin, generic.ListView):
@@ -98,7 +127,7 @@ class LoanedBooksAllListView(PermissionRequiredMixin, generic.ListView):
 # Added as part of challenge!
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
-
+@permission_required('catalog.can_mark_returned')
 class InjuriesAllListView(PermissionRequiredMixin, generic.ListView):
     """Generic class-based view listing all books on loan. Only visible to users with can_mark_returned permission."""
     model = Injury
@@ -109,14 +138,20 @@ class InjuriesAllListView(PermissionRequiredMixin, generic.ListView):
         return Injury.objects.all()
 
 
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-import datetime
-from django.contrib.auth.decorators import permission_required
 
-# from .forms import RenewBookForm
-from catalog.forms import RenewBookForm
+
+class BleedsAllListView(PermissionRequiredMixin, generic.ListView):
+    """Generic class-based view listing all books on loan. Only visible to users with can_mark_returned permission."""
+    model = BleedInfo
+    permission_required = 'catalog.can_mark_returned'
+    template_name = 'catalog/bleedinfo_list.html'
+
+    def get_queryset(self):
+        print(BleedInfo.objects.all())
+        return BleedInfo.objects.all()
+
+
+
 
 
     
@@ -127,12 +162,28 @@ def create_new_injury(request):
             injury = form.save(commit=False)
             injury.person = request.user
             injury.save()
-            return HttpResponseRedirect(reverse('my-injuries'))
+            return HttpResponseRedirect(reverse('my-bleeds'))
         else:
             variables = RequestContext(request, {'form': form})
-            return render(request, 'catalog/injury_form.html', variables)
+            return render(request, 'catalog/bleed_form.html', variables)
     else:
         form = InjuryForm(initial={'person': request.user})
+    context = {'request': request, 'form': form}
+    return render(request, 'catalog/injury_form.html', context)
+
+def create_new_bleed_ticket(request):
+    if request.method == "POST":
+        form = BleedForm(request.POST)
+        if form.is_valid():
+            bleed_info = form.save(commit=False)
+            bleed_info.person = request.user
+            bleed_info.save()
+            return HttpResponseRedirect(reverse('my-bleeds'))
+        else:
+            variables = RequestContext(request, {'form': form})
+            return render(request, 'catalog/bleed_form.html', variables)
+    else:
+        form = BleedForm(initial={'person': request.user})
     context = {'request': request, 'form': form}
     return render(request, 'catalog/injury_form.html', context)
 
@@ -184,13 +235,6 @@ class InjuryCreate(LoginRequiredMixin, CreateView):
     model = Injury
     fields = ['title', 'person', 'summary', 'type_of_injury']
     permission_required = 'catalog.can_mark_returned'
-
-#class InjuryCreate(LoginRequiredMixin):
-#    form = InjuryForm(request.POST)
-#    if form.is_valid():
-#        injury = form.save(commit=False)
-#        injury.person = request.user
-#        animal.save()
 
 class AuthorUpdate(PermissionRequiredMixin, UpdateView):
     model = Author

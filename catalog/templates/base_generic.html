@@ -18,7 +18,7 @@
           <li><a href="{% url 'index' %}">Home</a></li>
 <!--          <li><a href="{% url 'books' %}">All books</a></li>-->
 <!--          <li><a href="{% url 'authors' %}">All authors</a></li>-->
-          <li><a href="{% url 'injury_create' %}">File an injury</a></li>
+          <li><a href="{% url 'bleed_create' %}">File a bleed event</a></li>
 
         </ul>
         
@@ -26,7 +26,7 @@
          {% if user.is_authenticated %}
            <li>User: {{ user.get_username }}</li>
 <!--           <li><a href="{% url 'my-borrowed' %}">My Borrowed</a></li>-->
-           <li><a href="{% url 'my-injuries' %}">My Injuries</a></li>
+           <li><a href="{% url 'my-bleeds' %}">My Bleeds</a></li>
            <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
          {% else %}
            <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>
@@ -38,7 +38,7 @@
         <li>Staff</li>
         {% if perms.catalog.can_mark_returned %}
 <!--        <li><a href="{% url 'all-borrowed' %}">All borrowed</a></li>-->
-        <li><a href="{% url 'all-injuries' %}">All injuries</a></li>
+        <li><a href="{% url 'all-bleeds' %}">All bleeds</a></li>
         {% endif %}
         </ul>
          {% endif %}

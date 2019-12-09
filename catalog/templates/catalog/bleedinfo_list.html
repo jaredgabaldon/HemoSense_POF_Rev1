@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Bleed List</h1>
+  {% if bleedinfo_list %}
+  <ul>
+    {% for bleed in bleedinfo_list %}
+      <li>
+        <a href="{{ bleed.get_absolute_url }}">{{ bleed.title }}</a> ({{bleed.patient}})
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no bleeds to show.</p>
+  {% endif %}
+{% endblock %}

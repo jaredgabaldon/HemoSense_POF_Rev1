@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Author, Genre, Book, BookInstance, Injury, Person, Type_Of_Injury
+from .models import Author, Genre, Book, BookInstance, Injury, Person, Type_Of_Injury, BleedInfo
 
 #admin.site.register(Book)
 #admin.site.register(Author)
@@ -10,6 +10,7 @@ admin.site.register(Genre)
 admin.site.register(Injury)
 admin.site.register(Person)
 admin.site.register(Type_Of_Injury)
+admin.site.register(BleedInfo)
 #admin.site.register(BookInstance)
 
 # Define the admin class

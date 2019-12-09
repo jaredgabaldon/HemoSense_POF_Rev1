@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from datetime import date
 
 from django.forms import ModelForm
+from django import forms
+
 # Create your models here.
 class Genre(models.Model):
     """Model representing a book genre."""
@@ -35,6 +37,55 @@ class Language(models.Model):
 from django.contrib.auth.models import User  # Required to assign User as a borrower
 from catalog.choices import *
 
+
+class BleedInfo(models.Model):
+    """Model representing a book (but not a specific copy of a book)."""
+    title = models.CharField(max_length=200)
+    patient = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    ticket_initated_by = models.IntegerField(choices=USER_TYPES, default=1)
+    when_bleed_occured = models.DateField()
+    summary = models.TextField(max_length=1000, help_text='Enter a brief description of the bleed')
+    bleed_type = models.IntegerField(choices=BLEED_TYPE, default=1)
+    bleed_location = models.IntegerField(choices=BODY_LOCATIONS, default=1)
+    bleed_location_details = models.CharField(max_length=200)
+    extra_factor_yn = models.IntegerField(choices=YES_NO, default=1)
+    num_of_days_extra_factor_was_used =  models.IntegerField()
+    name_of_extra_factor_drug = models.CharField(max_length=200)
+    did_patient_use_factor_yn = models.IntegerField(choices=YES_NO, default=1)
+    why_patinet_did_not_use_facor = models.CharField(max_length=200)
+    did_patient_use_home_factor_yn = models.IntegerField(choices=YES_NO, default=1)
+    home_factor_supply_details= models.CharField(max_length=200)
+
+    def __str__(self):
+        """String for representing the Model object."""
+        return self.title
+
+    def get_absolute_url(self):
+        """Returns the url to access a detail record for this injury."""
+        return reverse('bleedinfo-detail', args=[str(self.id)])
+
+    # def display_injury_type(self):
+    #     """Create a string for the Genre. This is required to display genre in Admin."""
+    #     return ', '.join(type_of_injury.name for genre in self.type_of_injury.all()[:3])
+    #
+    # display_injury_type.short_description = 'Type_Of_Injury'
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
+class BleedForm(ModelForm):
+    class Meta:
+        model = BleedInfo
+        fields = ['title', 'patient', 'ticket_initated_by', 'summary', 'bleed_type',
+                  'bleed_location', 'bleed_location_details', 'when_bleed_occured', 'extra_factor_yn',
+                  'num_of_days_extra_factor_was_used', 'did_patient_use_factor_yn', 'why_patinet_did_not_use_facor',
+                  'did_patient_use_home_factor_yn', 'home_factor_supply_details']
+
+        widgets = {
+            'when_bleed_occured': DateInput(),
+        }
+
+
+
 class Injury(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
     title = models.CharField(max_length=200)
@@ -48,7 +99,7 @@ class Injury(models.Model):
     # ManyToManyField used because genre can contain many books. Books can cover many genres.
     # Genre class has already been defined so we can specify the object above.
 #        type_of_injury = models.ManyToManyField(Type_Of_Injury, help_text='Select a type of injury for this incident')
-    injury_type = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    injury_type = models.IntegerField(choices=BLEED_TYPE, default=1)
 
     def __str__(self):
         """String for representing the Model object."""
@@ -63,6 +114,7 @@ class Injury(models.Model):
         return ', '.join(type_of_injury.name for genre in self.type_of_injury.all()[:3])
 
     display_injury_type.short_description = 'Type_Of_Injury'
+
 
 class InjuryForm(ModelForm):
     class Meta:
