@@ -5,8 +5,18 @@
 
   <p><strong>Patient:</strong> <a href="">{{ bleedinfo.patient }}</a></p> <!-- author detail link not yet defined -->
   <p><strong>Summary:</strong> {{ bleedinfo.summary }}</p>
-  <p><strong>ticket_initated_by:</strong> {{ book.ticket_initated_by }}</p>
+  <p><strong>ticket_initated_by:</strong> {{ bleedinfo.get_ticket_initated_by_display }}</p>
   <p><strong>When:</strong> {{ bleedinfo.when_bleed_occured }}</p>
+  <p><strong>Bleed Type:</strong> {{ bleedinfo.bleed_type }}</p>
+  <p><strong>Bleed Location:</strong> {{ bleedinfo.bleed_location }}</p>
+  <p><strong>Bleed Location Details:</strong> {{ bleedinfo.bleed_location_details }}</p>
+  <p><strong>Extra Factor yn?:</strong> {{ bleedinfo.extra_factor_yn }}</p>
+  <p><strong>num days of Extra Factor?:</strong> {{ bleedinfo.num_of_days_extra_factor_was_used }}</p>
+  <p><strong>name of extra factor drug:</strong> {{ bleedinfo.name_of_extra_factor_drug }}</p>
+  <p><strong>did paitent use factor?:</strong> {{ bleedinfo.did_patient_use_factor_yn }}</p>
+  <p><strong>why patient didn't use extra factor?:</strong> {{ bleedinfo.why_patinet_did_not_use_facor }}</p>
+  <p><strong>did paitent use home factor?:</strong> {{ bleedinfo.did_patient_use_home_factor_yn }}</p>
+  <p><strong>home factor details:</strong> {{ bleedinfo.home_factor_supply_details }}</p>
 
 <!--  <div style="margin-left:20px;margin-top:20px">-->
 <!--    <h4>Copies</h4>-->

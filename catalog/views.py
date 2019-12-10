@@ -16,12 +16,8 @@ from catalog.forms import RenewBookForm
 def index(request):
     """View function for home page of site."""
     # Generate counts of some of the main objects
-    num_injuries = Injury.objects.all().count()
-    num_breaks = Injury.objects.filter(injury_type=1).count()
-    # Available copies of books
-#    num_people_available = BookInstance.objects.filter(status__exact='a').count()
-#    num_authors = Author.objects.count()  # The 'all()' is implied by default.
-    
+    num_bleeds = BleedInfo.objects.all().count()
+    num_joint_bleeds = BleedInfo.objects.filter(bleed_location=1).count()
 
     # Number of visits to this view, as counted in the session variable.
     num_visits = request.session.get('num_visits', 0)
@@ -31,7 +27,7 @@ def index(request):
     return render(
         request,
         'index.html',
-        context={'num_injuries': num_injuries, 'num_breaks': num_breaks,
+        context={'num_bleeds': num_bleeds, 'num_joint_bleeds': num_joint_bleeds,
                  'num_visits': num_visits},
     )
 
@@ -102,9 +98,10 @@ class InjuriesByUserListView(LoginRequiredMixin, generic.ListView):
 class BleedsByUserListView(LoginRequiredMixin, generic.ListView):
     """Generic class-based view listing books on loan to current user."""
     model = BleedInfo
-    template_name = 'catalog/bleed_list_by_user.html'
+    template_name = 'catalog/bleedinfo_list_by_user.html'
 
     def get_queryset(self):
+        print(BleedInfo.objects.filter(patient=self.request.user))
         return BleedInfo.objects.filter(patient=self.request.user)
 
 
@@ -151,10 +148,6 @@ class BleedsAllListView(PermissionRequiredMixin, generic.ListView):
         return BleedInfo.objects.all()
 
 
-
-
-
-    
 def create_new_injury(request):
     if request.method == "POST":
         form = InjuryForm(request.POST)
@@ -171,12 +164,13 @@ def create_new_injury(request):
     context = {'request': request, 'form': form}
     return render(request, 'catalog/injury_form.html', context)
 
+
 def create_new_bleed_ticket(request):
     if request.method == "POST":
         form = BleedForm(request.POST)
         if form.is_valid():
             bleed_info = form.save(commit=False)
-            bleed_info.person = request.user
+            bleed_info.patient = request.user
             bleed_info.save()
             return HttpResponseRedirect(reverse('my-bleeds'))
         else:
@@ -185,7 +179,7 @@ def create_new_bleed_ticket(request):
     else:
         form = BleedForm(initial={'person': request.user})
     context = {'request': request, 'form': form}
-    return render(request, 'catalog/injury_form.html', context)
+    return render(request, 'catalog/bleed_form.html', context)
 
 @permission_required('catalog.can_mark_returned')
 def renew_book_librarian(request, pk):
