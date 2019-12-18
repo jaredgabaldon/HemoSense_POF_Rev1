@@ -13,6 +13,45 @@ from django.contrib.auth.decorators import permission_required
 # from .forms import RenewBookForm
 from catalog.forms import RenewBookForm
 
+
+from reportlab.lib.units import inch, cm
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, Image, Table, TableStyle
+from reportlab.lib.pagesizes import inch
+from reportlab.lib.colors import pink, black, gray, blue, green
+from reportlab.graphics.shapes import Drawing, Line
+from reportlab.lib.styles import ParagraphStyle
+from pdf_styles import stylesheet
+
+
+def create_general_info_table():
+    table = Table([['title', 'patient', 'ticket_initated_by', 'when_bleed_occured', 'summary', 'bleed_type', 'bleed_location'],
+                   ['right arm bleed', 'fake patient', 'fake user', '2019-12-18', 'fake summary', 'spontanous bleed', 'elbow']],
+                  colWidths=[1.1 * inch, 1.1 * inch, 1.1 * inch, 1.1 * inch])
+    table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, gray),
+                               ('BOX', (0, 0), (-1, -1), 0.25, black),
+                               ('ROWBACKGROUNDS', (0, 0), (-1, 0), [green, gray]),
+                               ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                               ('FONTSIZE', (1, 0), (-1, -1), 8.5)
+                               ]))
+    return table
+# def create_pdf():
+styles = stylesheet()
+elements = []
+pdf_file_path = 'Macintosh HD/Users/jaredgabaldon/Documents/django_projects/locallibrary/'
+pdf_report = SimpleDocTemplate('example report.pdf',
+                               pagesize=letter,
+                               rightMargin=24,
+                               leftMargin=24,
+                               topMargin=24,
+                               bottomMargin=0.5 * inch)
+report_title = Paragraph('hemosense protype pdf', styles['title'])
+elements.append(report_title)
+data_table = create_general_info_table()
+elements.append(data_table)
+pdf_report.multiBuild(elements)
+
+
 def index(request):
     """View function for home page of site."""
     # Generate counts of some of the main objects
@@ -107,8 +146,6 @@ class BleedsByUserListView(LoginRequiredMixin, generic.ListView):
 
 # Added as part of challenge!
 from django.contrib.auth.mixins import PermissionRequiredMixin
-
-
 
 
 class LoanedBooksAllListView(PermissionRequiredMixin, generic.ListView):
