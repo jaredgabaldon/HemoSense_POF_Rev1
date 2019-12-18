@@ -24,9 +24,9 @@ from reportlab.lib.styles import ParagraphStyle
 from pdf_styles import stylesheet
 
 
-def create_general_info_table():
+def create_general_info_table(bleed_info):
     table = Table([['title', 'patient', 'ticket_initated_by', 'when_bleed_occured', 'summary', 'bleed_type', 'bleed_location'],
-                   ['right arm bleed', 'fake patient', 'fake user', '2019-12-18', 'fake summary', 'spontanous bleed', 'elbow']],
+                   [bleed_info.title, bleed_info.patient, bleed_info.ticket_initated_by, bleed_info.when_bleed_occured, bleed_info.summary, bleed_info.bleed_type, bleed_info.bleed_location]],
                   colWidths=[1.1 * inch, 1.1 * inch, 1.1 * inch, 1.1 * inch])
     table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, gray),
                                ('BOX', (0, 0), (-1, -1), 0.25, black),
@@ -35,21 +35,21 @@ def create_general_info_table():
                                ('FONTSIZE', (1, 0), (-1, -1), 8.5)
                                ]))
     return table
-# def create_pdf():
-styles = stylesheet()
-elements = []
-pdf_file_path = 'Macintosh HD/Users/jaredgabaldon/Documents/django_projects/locallibrary/'
-pdf_report = SimpleDocTemplate('example report.pdf',
-                               pagesize=letter,
-                               rightMargin=24,
-                               leftMargin=24,
-                               topMargin=24,
-                               bottomMargin=0.5 * inch)
-report_title = Paragraph('hemosense protype pdf', styles['title'])
-elements.append(report_title)
-data_table = create_general_info_table()
-elements.append(data_table)
-pdf_report.multiBuild(elements)
+def create_pdf(bleed_info):
+    styles = stylesheet()
+    elements = []
+    pdf_file_path = 'Macintosh HD/Users/jaredgabaldon/Documents/django_projects/locallibrary/'
+    pdf_report = SimpleDocTemplate('example report.pdf',
+                                   pagesize=letter,
+                                   rightMargin=24,
+                                   leftMargin=24,
+                                   topMargin=24,
+                                   bottomMargin=0.5 * inch)
+    report_title = Paragraph('hemosense protype pdf', styles['title'])
+    elements.append(report_title)
+    data_table = create_general_info_table(bleed_info)
+    elements.append(data_table)
+    pdf_report.multiBuild(elements)
 
 
 def index(request):
@@ -209,6 +209,8 @@ def create_new_bleed_ticket(request):
             bleed_info = form.save(commit=False)
             bleed_info.patient = request.user
             bleed_info.save()
+            print('bleed info', bleed_info.summary)
+            create_pdf(bleed_info)
             return HttpResponseRedirect(reverse('my-bleeds'))
         else:
             variables = RequestContext(request, {'form': form})
